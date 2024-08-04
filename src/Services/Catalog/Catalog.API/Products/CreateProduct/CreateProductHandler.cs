@@ -19,11 +19,8 @@
         Price = command.Price
       };
 
-      // TODO
-      // save to database
       session.Store(product);
       await session.SaveChangesAsync(cancellationToken);
-      // return result
 
       return new CreateProductResult(product.Id);
     }
