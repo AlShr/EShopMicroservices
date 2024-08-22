@@ -1,4 +1,6 @@
 ![Screenshot 2024-08-11 181132](https://github.com/user-attachments/assets/729d308f-e098-462b-9101-ea84a956dbf6)
+![Screenshot 2024-08-22 175423](https://github.com/user-attachments/assets/825f46a3-875b-4ab3-bd86-08d8822483a2)
+
 # EShopMicroservices
 
 How to build Microservices on .Net platforms which used Asp.Net Web API, Docker, RabbitMQ, MassTransit, Grpc, Yarp API Gateway, PostgreSQL, Redis, SQLite, SqlServer, Marten, Entity Framework Core, CQRS, MediatR, DDD, Vertical and Clean Architecture implementation using latest codes and best practices of .NET 8 on cloud-native environments.
