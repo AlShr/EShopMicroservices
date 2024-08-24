@@ -28,20 +28,10 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddHealthChecks()
   .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-  app.UseSwagger();
-  app.UseSwaggerUI();
-}
 
 // Configure the HTTP request pipeline
 app.MapCarter();
