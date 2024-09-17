@@ -98,7 +98,7 @@ namespace Ordering.Infrastructure.Data.Configurations
         y.Property(z => z.Expiration)
           .HasMaxLength(10);
 
-        y.Property(z => z.CVV)
+        y.Property(z => z.Cvv)
           .HasMaxLength(3);
 
         y.Property(z => z.PaymentMethod);

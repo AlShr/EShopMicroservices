@@ -5,19 +5,19 @@
     public string? CartName { get; set; } = default!;
     public string CartNumber { get; set; } = default!;
     public string Expiration { get; set; } = default!;
-    public string CVV { get; set; } = default!;
+    public string Cvv { get; set; } = default!;
     public int PaymentMethod { get; set; } = default!;
 
     protected Payment()
     {
     }
 
-    private Payment(string cartName, string cartNumber, string expiration, string cVV, int paymentMethod)
+    private Payment(string cartName, string cartNumber, string expiration, string cvv, int paymentMethod)
     {
       this.CartName = cartName;
       this.CartNumber = cartNumber;
       this.Expiration = expiration;
-      this.CVV = cVV;
+      this.Cvv = cvv;
       this.PaymentMethod = paymentMethod;
     }
 
