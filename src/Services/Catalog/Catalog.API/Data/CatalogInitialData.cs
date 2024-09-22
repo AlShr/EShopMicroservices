@@ -1,85 +1,86 @@
-﻿namespace Catalog.API.Data
+﻿using Marten.Schema;
+
+namespace Catalog.API.Data;
+
+public class CatalogInitialData : IInitialData
 {
-  public class CatalogInitialData : IInitialData
-  {
     public async Task Populate(IDocumentStore store, CancellationToken cancellation)
     {
-      using var session = store.LightweightSession();
-      if (await session.Query<Product>().AnyAsync())
-      {
-        return;
-      }
+        using var session = store.LightweightSession();
 
-      // Marten UPSERT will cater for existing records
-      session.Store<Product>(GetPreconfiguredProducts());
-      await session.SaveChangesAsync();
+        if (await session.Query<Product>().AnyAsync())
+            return;
+
+        // Marten UPSERT will cater for existing records
+        session.Store<Product>(GetPreconfiguredProducts());
+        await session.SaveChangesAsync();
     }
 
-    private static IEnumerable<Product> GetPreconfiguredProducts() => new List<Product>
-    {
-      new Product
-      {
-        Id = new Guid("3428D3DE-492F-4187-95CE-4BA31CB6E80B"),
-        Name = "iPhone 13",
-        Description = "Telefons Apple iPhone 13 128GB Starlight MLPG3ET/A",
-        ImageFile = "product-1.png",
-        Price = 609,
-        Category = new List<string>{"Smart Phone"}
-      },
-      new Product
-      {
-        Id = new Guid("143561F7-71C6-4ED8-B3AA-00DF23531981"),
-        Name = "iPhone 13",
-        Description = "Telefons Apple iPhone 13 128GB Midnight MLPF3ET/A",
-        ImageFile = "product-2.png",
-        Price = 609,
-        Category = new List<string>{"Smart Phone"}
-      },
-      new Product
-      {
-        Id = new Guid("891E24A4-118D-415B-ACD1-A9F2170D0611"),
-        Name = "iPhone 15",
-        Description = "Telefons Apple iPhone 15 128GB Black MTP03PX/A",
-        ImageFile = "product-3.png",
-        Price = 843,
-        Category = new List<string>{"Smart Phone"}
-      },
-      new Product
-      {
-        Id = new Guid("578DD20F-54BA-44AD-8204-E319C38F7C0C"),
-        Name = "iPhone 15",
-        Description = "Telefons Apple iPhone 15 256GB Pink MTP73PX/A",
-        ImageFile = "product-4.png",
-        Price = 939,
-        Category = new List<string>{"Smart Phone"}
-      },
-      new Product
-      {
-        Id = new Guid("6F90F143-A857-4F77-A491-B1BBC9AF10BE"),
-        Name = "iPhone 13",
-        Description = "Telefons Apple iPhone 13 128GB Pink MLPH3ET/A",
-        ImageFile = "product-5.png",
-        Price = 609,
-        Category = new List<string>{"Smart Phone"}
-      },
-      new Product
-      {
-        Id = new Guid("31AF00A9-9DB6-42BC-B1C8-51AD81519849"),
-        Name = "iPhone 15",
-        Description = "Telefons Apple iPhone 15 128GB Pink MTP13PX/A",
-        ImageFile = "product-6.png",
-        Price = 809,
-        Category = new List<string>{"Smart Phone"}
-      },
-      new Product
-      {
-        Id = new Guid("FE9BF547-25BD-4D84-9FF8-FF63026D36C6"),
-        Name = "iPhone 15",
-        Description = "Telefons Apple iPhone 15 Pro 128GB Black Titanium MTUV3PX/A",
-        ImageFile = "product-7.png",
-        Price = 1079,
-        Category = new List<string>{"Smart Phone"}
-      }
-    };
-  }
+    private static IEnumerable<Product> GetPreconfiguredProducts() => new List<Product>()
+            {
+                new Product()
+                {
+                    Id = new Guid("5334c996-8457-4cf0-815c-ed2b77c4ff61"),
+                    Name = "IPhone X",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-1.png",
+                    Price = 950.00M,
+                    Category = new List<string> { "Smart Phone" }
+                },
+                new Product()
+                {
+                    Id = new Guid("c67d6323-e8b1-4bdf-9a75-b0d0d2e7e914"),
+                    Name = "Samsung 10",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-2.png",
+                    Price = 840.00M,
+                    Category = new List<string> { "Smart Phone" }
+                },
+                new Product()
+                {
+                    Id = new Guid("4f136e9f-ff8c-4c1f-9a33-d12f689bdab8"),
+                    Name = "Huawei Plus",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-3.png",
+                    Price = 650.00M,
+                    Category = new List<string> { "White Appliances" }
+                },
+                new Product()
+                {
+                    Id = new Guid("6ec1297b-ec0a-4aa1-be25-6726e3b51a27"),
+                    Name = "Xiaomi Mi 9",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-4.png",
+                    Price = 470.00M,
+                    Category = new List<string> { "White Appliances" }
+                },
+                new Product()
+                {
+                    Id = new Guid("b786103d-c621-4f5a-b498-23452610f88c"),
+                    Name = "HTC U11+ Plus",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-5.png",
+                    Price = 380.00M,
+                    Category = new List<string> { "Smart Phone" }
+                },
+                new Product()
+                {
+                    Id = new Guid("c4bbc4a2-4555-45d8-97cc-2a99b2167bff"),
+                    Name = "LG G7 ThinQ",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-6.png",
+                    Price = 240.00M,
+                    Category = new List<string> { "Home Kitchen" }
+                },
+                new Product()
+                {
+                    Id = new Guid("93170c85-7795-489c-8e8f-7dcf3b4f4188"),
+                    Name = "Panasonic Lumix",
+                    Description = "This phone is the company's biggest change to its flagship smartphone in years. It includes a borderless.",
+                    ImageFile = "product-6.png",
+                    Price = 240.00M,
+                    Category = new List<string> { "Camera" }
+                }
+            };
+
 }

@@ -4,7 +4,7 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
-    <ProjectGuid>018653f8-1852-45c6-bb39-f80cf3b86808</ProjectGuid>
+    <ProjectGuid>6dcbec70-4866-4297-9ad0-73928ccfa987</ProjectGuid>
     <DockerLaunchAction>None</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>basket.api</DockerServiceName>

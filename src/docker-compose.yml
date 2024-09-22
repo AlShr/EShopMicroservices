@@ -3,10 +3,13 @@ version: '3.4'
 services:
   catalogdb:
     image: postgres
+
   basketdb:
     image: postgres
+
   distributedcache:
     image: redis
+
   orderdb:
     image: mcr.microsoft.com/mssql/server
 
@@ -31,5 +34,6 @@ services:
 volumes:
   postgres_catalog:
   postgres_basket:
+
 
 

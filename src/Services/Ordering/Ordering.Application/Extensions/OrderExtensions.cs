@@ -1,38 +1,17 @@
-﻿namespace Ordering.Application.Extensions
+﻿namespace Ordering.Application.Extensions;
+public static class OrderExtensions
 {
-  public static class OrderExtensions
-  {
-    public static IEnumerable<OrderDto> ToOrderDtosList(this IEnumerable<Order> orders)
+    public static IEnumerable<OrderDto> ToOrderDtoList(this IEnumerable<Order> orders)
     {
-      return orders.Select(x => new OrderDto(
-        Id: x.Id.Value,
-        CustomerId: x.CustomerId.Value,
-        OrderName: x.OrderName.Value,
-        ShippingAddress: new AddressDto(
-          x.ShippingAddress.FirstName,
-          x.ShippingAddress.LastName,
-          x.ShippingAddress.EmailAddress,
-          x.ShippingAddress.AddressLine,
-          x.ShippingAddress.Country,
-          x.ShippingAddress.State,
-          x.ShippingAddress.ZipCode),
-        BillingAddress: new AddressDto(
-          x.BillingAddress.FirstName,
-          x.BillingAddress.LastName,
-          x.BillingAddress.EmailAddress,
-          x.BillingAddress.AddressLine,
-          x.BillingAddress.Country,
-          x.BillingAddress.State,
-          x.BillingAddress.ZipCode),
-        Payment: new PaymentDto(
-          x.Payment.CartName,
-          x.Payment.CartNumber,
-          x.Payment.Expiration,
-          x.Payment.Cvv,
-          x.Payment.PaymentMethod),
-        Status: x.Status,
-        OrderItems: x.OrderItems
-          .Select(y => new OrderItemDto(y.OrderId.Value, y.ProductId.Value, y.Quantity, y.Price)).ToList()));
+        return orders.Select(order => new OrderDto(
+            Id: order.Id.Value,
+            CustomerId: order.CustomerId.Value,
+            OrderName: order.OrderName.Value,
+            ShippingAddress: new AddressDto(order.ShippingAddress.FirstName, order.ShippingAddress.LastName, order.ShippingAddress.EmailAddress!, order.ShippingAddress.AddressLine, order.ShippingAddress.Country, order.ShippingAddress.State, order.ShippingAddress.ZipCode),
+            BillingAddress: new AddressDto(order.BillingAddress.FirstName, order.BillingAddress.LastName, order.BillingAddress.EmailAddress!, order.BillingAddress.AddressLine, order.BillingAddress.Country, order.BillingAddress.State, order.BillingAddress.ZipCode),
+            Payment: new PaymentDto(order.Payment.CardName!, order.Payment.CardNumber, order.Payment.Expiration, order.Payment.CVV, order.Payment.PaymentMethod),
+            Status: order.Status,
+            OrderItems: order.OrderItems.Select(oi => new OrderItemDto(oi.OrderId.Value, oi.ProductId.Value, oi.Quantity, oi.Price)).ToList()
+        ));
     }
-  }
 }

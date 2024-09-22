@@ -1,17 +1,19 @@
-﻿namespace Ordering.Application.Orders.Queries.GetOrdersByCustomer
+﻿namespace Ordering.Application.Orders.Queries.GetOrdersByCustomer;
+public class GetOrdersByCustomerHandler(IApplicationDbContext dbContext)
+    : IQueryHandler<GetOrdersByCustomerQuery, GetOrdersByCustomerResult>
 {
-  public class GetOrdersByCustomerHandler(IApplicationDbContext dbContext) : IQueryHandler<GetOrdersByCustomerQuery, GetOrdersByCustomerResult>
-  {
     public async Task<GetOrdersByCustomerResult> Handle(GetOrdersByCustomerQuery query, CancellationToken cancellationToken)
     {
-      var orders = await dbContext.Orders
-        .Include(x => x.OrderItems)
-        .AsNoTracking()
-        .Where(x => x.CustomerId == CustomerId.Of(query.CustomerId))
-        .OrderBy(x => x.OrderName)
-        .ToListAsync(cancellationToken);
+        // get orders by customer using dbContext
+        // return result
 
-      return new GetOrdersByCustomerResult(orders.ToOrderDtosList());
+        var orders = await dbContext.Orders
+                        .Include(o => o.OrderItems)
+                        .AsNoTracking()
+                        .Where(o => o.CustomerId == CustomerId.Of(query.CustomerId))
+                        .OrderBy(o => o.OrderName.Value)
+                        .ToListAsync(cancellationToken);
+
+        return new GetOrdersByCustomerResult(orders.ToOrderDtoList());        
     }
-  }
 }

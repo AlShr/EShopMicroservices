@@ -1,34 +1,32 @@
-﻿namespace Ordering.Domain.ValueObjects
+﻿namespace Ordering.Domain.ValueObjects;
+public record Payment
 {
-  public record Payment
-  {
-    public string? CartName { get; set; } = default!;
-    public string CartNumber { get; set; } = default!;
-    public string Expiration { get; set; } = default!;
-    public string Cvv { get; set; } = default!;
-    public int PaymentMethod { get; set; } = default!;
+    public string? CardName { get; } = default!;
+    public string CardNumber { get; } = default!;
+    public string Expiration { get; } = default!;
+    public string CVV { get; } = default!;
+    public int PaymentMethod { get; } = default!;
 
     protected Payment()
     {
     }
 
-    private Payment(string cartName, string cartNumber, string expiration, string cvv, int paymentMethod)
+    private Payment(string cardName, string cardNumber, string expiration, string cvv, int paymentMethod)
     {
-      this.CartName = cartName;
-      this.CartNumber = cartNumber;
-      this.Expiration = expiration;
-      this.Cvv = cvv;
-      this.PaymentMethod = paymentMethod;
+        CardName = cardName;
+        CardNumber = cardNumber;
+        Expiration = expiration;
+        CVV = cvv;
+        PaymentMethod = paymentMethod;
     }
 
-    public static Payment Of(string cartName, string cartNumber, string expiration, string cVV, int paymentMethod)
+    public static Payment Of(string cardName, string cardNumber, string expiration, string cvv, int paymentMethod)
     {
-      ArgumentException.ThrowIfNullOrWhiteSpace(cartName);
-      ArgumentException.ThrowIfNullOrWhiteSpace(cartNumber);
-      ArgumentException.ThrowIfNullOrWhiteSpace(cVV);
-      ArgumentOutOfRangeException.ThrowIfGreaterThan(cVV.Length, 3);
+        ArgumentException.ThrowIfNullOrWhiteSpace(cardName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(cardNumber);
+        ArgumentException.ThrowIfNullOrWhiteSpace(cvv);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(cvv.Length, 3);
 
-      return new Payment(cartName, cartNumber, expiration, cVV, paymentMethod);
+        return new Payment(cardName, cardNumber, expiration, cvv, paymentMethod);
     }
-  }
 }

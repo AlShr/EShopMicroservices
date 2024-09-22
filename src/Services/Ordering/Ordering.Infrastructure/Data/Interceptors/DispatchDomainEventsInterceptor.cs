@@ -1,45 +1,38 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Ordering.Infrastructure.Data.Interceptors
+namespace Ordering.Infrastructure.Data.Interceptors;
+public class DispatchDomainEventsInterceptor(IMediator mediator) 
+    : SaveChangesInterceptor
 {
-  public class DispatchDomainEventsInterceptor(IMediator mediator) : SaveChangesInterceptor
-  {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
-      this.DispatchDomainEvents(eventData.Context).GetAwaiter().GetResult();
-      return base.SavingChanges(eventData, result);
+        DispatchDomainEvents(eventData.Context).GetAwaiter().GetResult();
+        return base.SavingChanges(eventData, result);
     }
 
-    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result,
-      CancellationToken cancellationToken = new CancellationToken())
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-      await this.DispatchDomainEvents(eventData.Context);
-      return await base.SavingChangesAsync(eventData, result, cancellationToken);
+        await DispatchDomainEvents(eventData.Context);
+        return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
     public async Task DispatchDomainEvents(DbContext? context)
     {
-      if (context == null)
-      {
-        return;
-      }
+        if (context == null) return;
 
-      var aggregates = context.ChangeTracker
-        .Entries<IAggregate>()
-        .Where(x => x.Entity.DomainEvents.Any())
-        .Select(x => x.Entity);
+        var aggregates = context.ChangeTracker
+            .Entries<IAggregate>()
+            .Where(a => a.Entity.DomainEvents.Any())
+            .Select(a => a.Entity);
 
-      var domainEvents = aggregates
-        .SelectMany(x => x.DomainEvents)
-        .ToList();
+        var domainEvents = aggregates
+            .SelectMany(a => a.DomainEvents)
+            .ToList();
 
-      aggregates.ToList().ForEach(x=>x.ClearDomainEvents());
+        aggregates.ToList().ForEach(a => a.ClearDomainEvents());
 
-      foreach (var domainEvent in domainEvents)
-      {
-        await mediator.Publish(domainEvent);
-      }
+        foreach (var domainEvent in domainEvents)
+            await mediator.Publish(domainEvent);
     }
-  }
 }

@@ -1,29 +1,31 @@
 ﻿using BuildingBlocks.Pagination;
 
-namespace Ordering.Application.Orders.Queries.GetOrders
+namespace Ordering.Application.Orders.Queries.GetOrders;
+public class GetOrdersHandler(IApplicationDbContext dbContext)
+    : IQueryHandler<GetOrdersQuery, GetOrdersResult>
 {
-  public class GetOrdersHandler(IApplicationDbContext dbContext) : IQueryHandler<GetOrdersQuery, GetOrdersResult>
-  {
     public async Task<GetOrdersResult> Handle(GetOrdersQuery query, CancellationToken cancellationToken)
     {
-      var pageIndex = query.PaginationRequest.PageIndex;
-      var pageSize = query.PaginationRequest.PageSize;
+        // get orders with pagination
+        // return result
 
-      var totalCount = await dbContext.Orders.LongCountAsync(cancellationToken);
+        var pageIndex = query.PaginationRequest.PageIndex;
+        var pageSize = query.PaginationRequest.PageSize;
 
-      var orders = await dbContext.Orders
-        .Include(x => x.OrderItems)
-        .OrderBy(x => x.OrderName.Value)
-        .Skip(pageSize * pageIndex)
-        .Take(pageSize)
-        .ToListAsync(cancellationToken);
+        var totalCount = await dbContext.Orders.LongCountAsync(cancellationToken);
 
-      return new GetOrdersResult(
-        new PaginatedResult<OrderDto>(
-          pageIndex,
-          pageSize,
-          totalCount,
-          orders.ToOrderDtosList()));
+        var orders = await dbContext.Orders
+                       .Include(o => o.OrderItems)
+                       .OrderBy(o => o.OrderName.Value)
+                       .Skip(pageSize * pageIndex)
+                       .Take(pageSize)
+                       .ToListAsync(cancellationToken);
+
+        return new GetOrdersResult(
+            new PaginatedResult<OrderDto>(
+                pageIndex,
+                pageSize,
+                totalCount,
+                orders.ToOrderDtoList()));        
     }
-  }
 }
