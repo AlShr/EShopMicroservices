@@ -1,7 +1,7 @@
-﻿namespace Shopping.Web.Models.Catalog
+﻿namespace Shopping.Web.Models.Basket;
+
+public class BasketCheckoutModel
 {
-  public class BasketCheckoutModel
-  {
     public string UserName { get; set; } = default!;
     public Guid CustomerId { get; set; } = default!;
     public decimal TotalPrice { get; set; } = default!;
@@ -21,8 +21,8 @@
     public string Expiration { get; set; } = default!;
     public string CVV { get; set; } = default!;
     public int PaymentMethod { get; set; } = default!;
-  }
-
-  public record CheckoutBasketRequest(BasketCheckoutModel BasketCheckoutDto);
-  public record CheckoutBasketResponse(bool IsSuccess);
 }
+
+// wrapper classes
+public record CheckoutBasketRequest(BasketCheckoutModel BasketCheckoutDto);
+public record CheckoutBasketResponse(bool IsSuccess);
