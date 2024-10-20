@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YarpGateway", "ApiGateways\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{38FC791A-9906-4DB7-9F95-711EF909F494}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopping.Web", "WebApps\Shopping.Web\Shopping.Web.csproj", "{8A6D0126-0658-4E9A-8F65-3A705A091545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopping.Web", "WebApps\Shopping.Web\Shopping.Web.csproj", "{8A6D0126-0658-4E9A-8F65-3A705A091545}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
