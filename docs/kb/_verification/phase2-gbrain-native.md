@@ -146,7 +146,64 @@ The score change between stages is the benefit you're measuring.
 
 | Question | Citations checked | Correct | Cost | Saved page slug |
 |---|---|---|---|---|
-| | | | | |
+- Q1: all claims correct, 10/10 citations point to the right files. Discount's DB
+  reported as unknown (it's SQLite, set in Program.cs:9-10, a top-level statement;
+  more evidence that Program.cs isn't indexed). Gateway missing: it used the cut-off
+  docker-compose.yml, not the override. Direct answer table instead of 5 files to read;
+  same score as S1 under the strict rubric.
+  - `put` of a think answer: committed to `default` as 1 chunk; auto_links created 0:
+  think's `[slug]` citations aren't link syntax, so saved pages stay orphans with
+  no links to the code they cite. embedding_state queued (no worker live), so
+  embed `default` before Stage 8.
+  
+- Q2: all claims correct (StoreBasketHandler.cs:33-37, DiscountService.cs:15-20,
+  local and Docker addresses). gbrain flagged a model typo in one citation
+  (CITATION_NOT_IN_GATHER): citations are checked against the evidence read. Missing:
+  that discounts are applied on StoreBasket before saving. No Gaps section.
+  
+  - Q3: think scored LOWER than query (1 vs. 2). All 6 claims correct, but it missed
+  the core: publish BasketCheckoutEvent, then delete the basket
+  (CheckoutBasketHandler.cs:32-43), and Ordering's hardcoded order items. Its Gaps
+  section says method bodies weren't in its evidence: it got class outlines with
+  member names, not code. Good at "what exists and how it connects", weak at
+  "what happens step by step".
+
+- Q4: correct and minimal (BasketCheckoutEventHandler in Ordering, Consume +
+  MapToCreateOrderCommand). Cheapest answer so far ($0.03): an exact type name
+  gives a short, exact answer. Doesn't show that it's the only consumer, and
+  doesn't explain the consumer registration (AddMessageBroker with assembly).
+  
+  - Q5: read path (CachedBasketRepository.cs:10-19) and Redis config correct. Misled by the
+  stale TODO in DeleteBasketHandler.cs:19: says cache invalidation on delete "is not
+  demonstrated", but CachedBasketRepository.DeleteBasket removes it (:30-37). Gaps list
+  store-refreshes-cache (it does, :21-28; the method-body blind spot) and registration
+  (Program.cs:27-34; the Program.cs gap, 3rd time). Stale comments mislead both query and think.
+  
+  - Q7: found Basket → BasketCheckoutEvent (CheckoutBasketHandler.cs:38-41), but missed
+  Ordering → OrderDto (OrderCreatedEventHandler.cs:13-16), and the Gaps section doesn't
+  say other publishers might exist (a silent omission). It described the publish from
+  the handler's comments (:27-30), not the Publish call (method body not in evidence).
+  `gbrain code-callers Publish` (free) found all 3 Publish calls: a structural lookup
+  beats think on "who does X".
+  
+  - Q8: found OrderFullfilment=false (Ordering appsettings.json:10-11), noted the spelling,
+  and that it's wired into Ordering. Couldn't say what it controls (OrderCreatedEventHandler
+  body not in evidence; it gates publishing OrderDto, :13-17). Docker sets it true
+  (docker-compose.override.yml:114): not found, but flagged as a possible gap.
+- Stage 2 summary: S2 total 11/16. Up: Q6 (synthesis over 16 files), Q7. Down: Q3
+  (method bodies). Patterns: method-body blind spot (Q3/5/7/8), Program.cs gap (Q1/5/6),
+  honest Gaps with no made-up facts (except a silent omission in Q7 and a stale-comment
+  hedge in Q5). Cost: $0.43 for 8 answers.
+  
+  
+!  gbrain think "What is published to RabbitMQ, and by whom?" --source gstack-code-6651f992-3f84fc > docs/kb/_verification/think/q7.md  !  cat docs/kb/_verification/think/q7.md
+
+!  cat docs/kb/_verification/think/q7.md
+!  gbrain put synthesis/eshop-q7-rabbitmq --source-id default < docs/kb/_verification/think/q7.md | grep -E '^  "(slug|state|embedding_state)"'
+
+for last
+
+
 
 ### Stage 3: freshness test
 
