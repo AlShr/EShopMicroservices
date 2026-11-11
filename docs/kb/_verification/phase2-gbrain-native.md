@@ -241,13 +241,57 @@ for last
     (sentence 1). The other 2 sentences, which the change didn't affect, stayed fresh:
   per-sentence precision. (status prints to stderr; use 2>&1 when piping.)
   
+  
+  - `questions refresh` on the stale Q8 pin FAILED: the new answer still says
+  OrderFullfilment is `false` (gbrain's appsettings.json page says `true`) and all
+  sentences show fresh. Likely cause: docs/kb/_verification (think/q8.md, notes saying
+  `false`) was indexed into the code source by the earlier sync, and the refresh used it
+  as evidence. "Fresh" means consistent with retrieved evidence, not correct. Keep KB and
+  evaluation docs out of the source that pins read.
+- Freshness test summary: detection passed (right sentence, no false alarms);
+  re-answering failed (stale fact regenerated, alert cleared).
+
+- Cleanup sync (`--strategy code`, f7a39e7 → dc4e708): appsettings.json back to false.
+  Each sync strategy covers only its file types: code strategy skipped the changed .md
+  in the same commit; plain sync skips code. A fully current source needs both
+  (or /sync-gbrain).
+  
+  - After the cleanup sync (appsettings back to false), the refreshed Q8 pin stayed
+  fresh: its evidence is now docs/kb/_verification/think/q8.md, not appsettings.json,
+  so config changes no longer affect it. Its text ("false") is right by coincidence.
+  The refresh silently broke change tracking for this pin. Fix: keep docs/ out of the
+  code source, then unpin and pin again.
+- Stage 3 summary: pin answers best of all stages (3/3 better than think); detection
+  precise; refresh and tracking after refresh unreliable when docs share the source;
+  automatic refresh needs autopilot.
+  
 ### Stage 4: structure
 
 Stage 4 table, "Before" column:
 | Links | 0 (every page is an orphan) | |
 | Orphan pages | 195 | |
+- `extract all --source db --source-id default --dry-run`: 0 links, 0 timeline
+  entries from 15 pages; 9 candidates skipped (target page doesn't exist in this source).
+  think's `[slug]` citations point to the code source, so basic extract can't link
+  KB pages to code. Orphans unchanged (195).
+- `reconcile-links --dry-run`: scanned 41 Markdown pages across all sources (including
+  transcripts), found 17 code refs, attempted 0 edges. think answers cite page slugs
+  (`[src-…]`), which it doesn't count as code refs (Q6 alone has 18), so gbrain's own
+  answer format doesn't feed its docs↔code linker. Unclear whether 0 attempted is
+  dry-run behaviour or unmatched refs.
+  
+  
+- `extract links --by-mention`: "No linkable entity pages" (needs person/company/
+  organization/entity pages).
+- Stage 4 summary: none of gbrain's automatic linking applies to a code KB. extract
+  needs same-source explicit links; by-mention needs entity pages; reconcile-links
+  doesn't recognise think's slug citations; timeline needs dates. Only manual
+  `gbrain link` remains. The graph-building is designed for a personal brain
+  (people, meetings, timelines), like the health score.
 
-
+Stage 4 table:
+| Links | 0 | 0 from Stage 4 (1 created earlier by sync, between docs/kb .md files) |
+| Orphan pages | 195 of 195 | 216 of ~218 (more pages, still ~99% orphans) |
 
 
 ### Stages 5-7
@@ -255,8 +299,25 @@ Stage 4 table, "Before" column:
 | Stage | Observation |
 |---|---|
 | 5. Export readable as-is? | |
-| 6. Context file: tokens, covers Q1-Q8? | |
-| 7. Upkeep: what `dream` / `extract --stale` would change | |
+- Export of a think answer: body unchanged; gbrain adds frontmatter (type: concept, title
+  from the H1, trust_tier: agent_written, ingested_at, source_kind). No tags.
+- Readability for a new developer: content good, but `[src-…]` citations stay plain slugs,
+  not links or paths, so they can't be followed on GitHub, and mapping a slug back to a file
+  is guesswork (case, `/` and `.` are lost). Cost footer stays in. No index, no links between
+  pages. Result: a folder of separate Q&A notes, not navigable documentation.
+
+
+
+
+| 6. Context file: tokens, covers Q1-Q8? | 4000-token budget, from the pinned code source (not default). Each entry = title + brain:// link + FIRST LINE only (`{`, `namespace …`, `1.`). Includes the think answers only via their docs/kb copies, plus my evaluation notes, the minified jQuery plugin, CSS and EF migrations; budget ends before Catalog, Basket, Discount and the gateway. Covers Q4 only. Not useful as given; and it would feed evaluation notes into future Claude sessions |! gbrain compile-context --target claude-code --stdout --source default
+
+Ready to paste under Stages 5-7:
+| 6b. Context from `--source default` | The 8 KB answers first (newest first), first line only; complete facts only for Q2, Q4, Q7 (half). Then 7 gstack JSON event and learning logs, mostly from OTHER work (gstack/gbrain Windows branches): `default` is shared across all projects, so their notes would enter EShop's context. Far under the 4000-token budget; first-line rendering is the limit. Works as an index (question titles + brain:// links) for Claude to open pages over MCP, not as knowledge. Best setup: the KB in its own source |
+| 6. Context file: tokens, covers Q1-Q8? | 4000-token budget, from the pinned code source (not default). Each entry = title + brain:// link + FIRST LINE only (`{`, `namespace …`, `1.`). Includes the think answers only via their docs/kb copies, plus my evaluation notes, the minified jQuery plugin, CSS and EF migrations; budget ends before Catalog, Basket, Discount and the gateway. Covers Q4 only. Not useful as given; and it would feed evaluation notes into future Claude sessions |
+
+
+| 7. Upkeep: `dream --dry-run` | Half the phases need a local brain dir (Postgres has none). Relevant to a code KB: standing_questions (refreshes pins only when due; 0 due), embed (226 chunks, mostly transcripts: a real run would bring Claude session text into search), resolve_symbol_edges (skipped in dry run; may fix the unresolved call graph, untested). Most other phases are personal-brain features, off by default. unindexed_files: none missing. Orphans 216/218 |
+| 7b. `extract --stale --dry-run` | 16 pages need link/timeline extraction, 218 need a mention pass (never run). Stage 4 showed these passes yield 0 links and 0 entries for a code KB, so "stale" never reaches 0: not a usable health signal. Real upkeep for this KB = sync --strategy code (code), plain sync (Markdown), embed, questions refresh / autopilot |
 
 ## Verdict
 
@@ -264,3 +325,78 @@ Stage 4 table, "Before" column:
 - Where gbrain's own output was good enough to keep:
 - Where a human still had to write or fix:
 - Cost per question and in total:
+
+- Setup: `query "<Q>" --source-ids gstack-code-6651f992-3f84fc,default` (comma list works).
+  Score = best answer available in the top 5; eval notes (phase1/phase2 files) don't count.
+- Q1: KB page synthesis/eshop-q1-services #1 (1.098 vs. 0.39 next): a direct answer, but its
+  content scored 1. Code hits as in S1. Score 1. Caveat: the question equals the KB page title
+  (near-exact match); test a paraphrase. Scores are scaled across sources, so compare ranks, not numbers.
+  
+  - Q1 paraphrase ("what databases do the microservices use"): KB page still #1 (0.86), but only
+  0.05 ahead of docker-compose.override.yml (vs. 0.71 for the exact title). The KB is findable
+  without its exact wording; the big lead before was an exact-match bonus. Scores are scaled
+  per query, so compare ranks only.
+  
+  - Q2: #1 = docs/kb/_verification/think/q2 (code-source copy of the KB answer, 1.36); code hit
+  StoreBasketHandler.cs:30-38 dropped from #1 (S1) to #3. 4 of the top 5 are docs/kb pages,
+  2 of them noise (runbook, eval notes): the docs push the code down. The synthesis/ copy in
+  default isn't in the top 25 (apparently one of two identical pages is kept). The Q2 pin,
+  the best answer, isn't returned either; check with --explain-target.
+  
+  - Q3: #1 synthesis/eshop-q3-checkout and #2 think/q3-rounds2 (both near 1.72, both weaker answers
+  scored 1); the full CheckoutBasketHandler.cs:21-47 body dropped from #2 (S1) to #5. Score 2 only
+  because it's still in the top 5. Weaker KB answers outrank better code: a reader stopping at #1-2
+  gets the incomplete answer. Identical copies are de-duplicated (kept copy differs per query);
+  near-duplicates both appear. The Q3 pin (best answer) still not returned.
+  
+  - Q4: #1 think/q4 (KB answer, 2). #2-4 are other KB answers (q3, q3-rounds2, q7); the consumer
+  code (S1 #1) dropped to #5. Pattern Q2-Q4: best code hit S1 → S8 = #1→#3, #2→#5, #1→#5.
+  KB pages are short and topic-dense, so they rank for any related question; with a larger KB,
+  code would fall out of the top 5. Kept duplicate copy varies per query (think/q3 here,
+  synthesis in Q3).
+  
+  - Q5: #1 think/q5 (KB answer, 1, with the misleading cache-delete claim), #2 the stale TODO
+  (DeleteBasketHandler.cs:17-23) it was based on. The real cache code (CachedBasketRepository.cs:10-19)
+  dropped from #2 (S1) to #7. A KB mistake reinforces itself: wrong answer #1, its misleading source
+  #2, the correcting code pushed out. Both eval files in the top 5 (#3, #4). No review step in gbrain
+  would catch this.
+  
+  - Q6: #1 synthesis/eshop-q6-gateway-routes (the complete answer, 16/16 endpoints). Clearest KB win:
+  one page replaces combining the gateway config with 16 endpoint files. The topic doesn't overlap
+  other KB pages, so #2-5 are code, not other KB answers. The KB helps when pages cover distinct
+  topics, and crowds results when they overlap (Q2-Q5).
+  
+  - Q7: #1 synthesis/eshop-q7-rabbitmq (KB answer, 1); S1 was 0, so the KB page is the only gain.
+  #2-5 = eval notes (twice: chunks of one page aren't de-duplicated), runbook, scorecard. The eval
+  notes name both publishers and would give a false 2, hence the exclusion rule. Publisher code
+  dropped #10 → #22; OrderCreatedEventHandler still not in top 25. 4 of the top 5 are docs about
+  gbrain, not EShop: docs/ must be in its own source.
+  
+  
+  ## Verdict
+
+- **Benefit over plain code search (S8 vs. S1):** small. Total 12/16 vs. 9-10/16. Gains only
+  where the answer is spread over many files (Q6) or search missed entirely (Q7). On Q2-Q5 the
+  KB pages pushed the best code hits down (#1→#3, #2→#5, #1→#5, #2→#7), and on Q5 a wrong KB
+  claim now ranks #1 with its misleading source at #2.
+- **Best gbrain feature: pinned questions.** Pin answers were the most accurate of any stage
+  (Q3: 5/5 sentences, full checkout sequence), and change detection was precise (only the
+  affected sentence went stale, no false alarms). But refresh can bring back a stale fact
+  from saved answers and mark it fresh, and pins don't appear in `query` results.
+- **`think`:** honest (reports gaps, no made-up facts) and good at combining many small files
+  (Q6), but it sees class outlines, not method bodies, so it can't explain step-by-step
+  behaviour (Q3, Q5, Q7, Q8). Cost: ~$0.03-0.09 per answer.
+- **Index gaps:** top-level Program.cs code (all DI wiring) never retrieved; vendored jQuery
+  indexed; stale comments rank like code.
+- **Linking and graph:** none of gbrain's automatic linking applies to a code KB (it's built
+  for people, companies and timelines); ~99% of pages stay orphans; think never used the graph.
+- **Export and Claude Code context:** export gives readable Q&A files, but citations are slugs
+  you can't follow. compile-context gives titles + first lines only: usable as an index for
+  Claude over MCP, not as knowledge.
+- **Setup rules learned:** keep docs/ (KB pages, notes) in a separate source from the code,
+  or they compete with and contaminate it; code changes need `sync --strategy code`;
+  `default` is shared by all projects on the machine.
+- **Where a human still had to work:** working around the save errors, checking every answer
+  against the code (one misleading claim, one silent omission), and anything needing links,
+  an index or followable citations.
+- **Cost:** ~$0.43 for 8 think answers, ~$0.15 for pins and tests, ~$0.01 for embeddings.
