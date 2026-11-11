@@ -202,15 +202,45 @@ The score change between stages is the benefit you're measuring.
 !  gbrain put synthesis/eshop-q7-rabbitmq --source-id default < docs/kb/_verification/think/q7.md | grep -E '^  "(slug|state|embedding_state)"'
 
 for last
-
+! gbrain embed --stale --yes --source default
 
 
 ### Stage 3: freshness test
 
 | Pin ID | Question | File changed | Stale sentences flagged correctly? |
 |---|---|---|---|
-| | | | |
+- Q2 pinned in the code source (pins can write there; think --save couldn't).
+  4 sentences, all correct, and better than think: says discounts are applied
+  when the basket is stored, before saving. No cost shown, no approval asked.
 
+- Q3 pin: 5/5 sentences correct, the full sequence (page → validate → recalculated total →
+  publish → Ordering create-order → delete from DB and cache → HTTP 200). Much better than
+  think (1): pins read method bodies; think didn't. Also corrects think's Q5 claim about
+  cache delete. Caveats: "validates" describes the code, but Basket never registers its
+  validators; the hardcoded order items aren't mentioned.
+  
+  - Q8 pin: correct on both parts: OrderFullfilment=false, and when on, it publishes the
+  created order as an integration event (OrderCreatedEventHandler.cs:13-17), which
+  think couldn't establish. Missing: Docker sets it true (docker-compose.override.yml:114).
+- Pins vs. think so far: Q2 2/2 (pin adds timing), Q3 1→2, Q8 1→2. Pins read method
+  bodies; think doesn't.
+  
+  - Sync after the flip (9b924da → f7a39e7): +12 added (the docs/kb .md files),
+  ~0 modified: check that appsettings.json was re-indexed. Side effect: the code
+  source indexes all committed files, so the evaluation notes and think answers are
+  now in the code index (use `query --types code` in Stage 8). The live `gbrain serve`
+  is the writer coordinator, which explains the earlier think --save error.
+  
+  
+  - Freshness test PASSED: after flipping OrderFullfilment and `sync --strategy code`, only
+  the Q8 pin went stale (1 of 3 sentences); Q2 and Q3 (controls) stayed fresh. Per-sentence
+  staleness detection works with no false alarms.
+- Detection is automatic, re-answering isn't: all pins `blocked: no_worker`. Updating needs a
+  manual `questions refresh` or `gbrain autopilot --install`.
+  
+    (sentence 1). The other 2 sentences, which the change didn't affect, stayed fresh:
+  per-sentence precision. (status prints to stderr; use 2>&1 when piping.)
+  
 ### Stage 4: structure
 
 Stage 4 table, "Before" column:
