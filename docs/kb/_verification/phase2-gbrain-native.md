@@ -400,3 +400,24 @@ Ready to paste under Stages 5-7:
   against the code (one misleading claim, one silent omission), and anything needing links,
   an index or followable citations.
 - **Cost:** ~$0.43 for 8 think answers, ~$0.15 for pins and tests, ~$0.01 for embeddings.
+
+
+- Separation done: 12 docs/kb pages soft-deleted from the code source (`delete --force`;
+  phase2-gbrain-native first needed `repair file-drift --prefer file` because its newer
+  commit wasn't imported). `delete` also removed the files from the repo working tree (the
+  source's local_path); restored with `git restore`, and gbrain committed nothing. With the
+  code strategy saved, a plain sync plans 0 adds: docs don't come back.
+  
+  
+  
+The A/B test is complete
+
+┌────────────────────────┬──────────────────────────────────────────────────────────────────┐
+│    Kind of question    │                        Result with gbrain                        │
+├────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ Code questions (Q2,    │ Same answer quality, 25-46% more expensive. Claude reads the     │
+│ Q7)                    │ code anyway                                                      │
+├────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ Knowledge that isn't   │ The only way to get it, and 65% cheaper and 40% faster, provided │
+│ in the code            │  the fact is in the repo's pinned source                         │
+└────────────────────────┴──────────────────────────────────────────────────────────────────┘
