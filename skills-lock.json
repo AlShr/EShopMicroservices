@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "skills": {
+    "api-and-interface-design": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/api-and-interface-design/SKILL.md",
+      "computedHash": "f8cb4ee59fe787bf94bfe40086ca4652d3cb738e16805d10acca2da3b80a001e",
+      "installMode": "copy"
+    },
+    "constraint-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/constraint-driven-development/SKILL.md",
+      "computedHash": "6cbbb88bcec7893403d794ea0411a34ea3e913517a86fa86d2d0a1707a7095ba",
+      "installMode": "copy"
+    },
+    "documentation-and-adrs": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-and-adrs/SKILL.md",
+      "computedHash": "a7fa200df9d2a41ac7cac858c4a78a26e220308488fbe25e376b7e755ffbc612",
+      "installMode": "copy"
+    },
+    "observability-and-instrumentation": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/observability-and-instrumentation/SKILL.md",
+      "computedHash": "71661b8e1558d7eed8cdf93bfb731da1c3afed9b895b049ecf92792af0d8a364",
+      "installMode": "copy"
+    },
+    "test-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "computedHash": "60f294cc1ededf0d006811f4be199a415493fc048b6058c5b66193fba114a173",
+      "installMode": "copy"
+    }
+  }
+}
